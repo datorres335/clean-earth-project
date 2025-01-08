@@ -1,2 +1,16 @@
-# clean-earth-project
-Join the Clean Earth Project and help restore our planet! This community-driven app lets you upload photos of areas needing cleanup and mark them on an interactive map. Spot littered or polluted locations, raise awareness, and collaborate with others to make a difference. Together, we can build a cleaner, healthier world!
+# clean_earth_project2
+
+A new Flutter project.
+
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
