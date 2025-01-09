@@ -14,7 +14,6 @@ class _DraggableSheetState extends State<DraggableSheet> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     controller.addListener(onChanged);
   }

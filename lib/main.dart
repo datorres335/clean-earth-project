@@ -2,6 +2,7 @@
 TODO: remove top app bar
  */
 
+import 'package:clean_earth_project2/pick_image.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_earth_project2/search_page.dart';
 import 'package:clean_earth_project2/post_page.dart';
@@ -48,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // List of pages
   final List<Widget> _pages = [
     SearchPage(),
-    PostPage(),
+    PickImage(),//PostPage(),
     SavedPage(),
     ProfilePage(),
   ];
