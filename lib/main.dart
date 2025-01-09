@@ -69,7 +69,6 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
-          //print("Tapped on index!!!!!!!!!!!!!: $index");
           setState(() {
             _currentIndex = index;
           });

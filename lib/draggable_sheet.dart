@@ -41,7 +41,7 @@ class _DraggableSheetState extends State<DraggableSheet> {
       return DraggableScrollableSheet(
           key: sheet,
           initialChildSize: 0.5,
-          maxChildSize: 0.95, // make this 1 to cover the whole screen
+          maxChildSize: 1, // make this 1 to cover the whole screen
           minChildSize: 0.05,
           expand: true,
           snap: true,
