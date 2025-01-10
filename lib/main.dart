@@ -2,7 +2,8 @@
 TODO: remove top app bar
  */
 
-import 'package:clean_earth_project2/pick_image.dart';
+import 'package:clean_earth_project2/image_picker_REFERENCE_ONLY.dart';
+import 'package:clean_earth_project2/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_earth_project2/search_page.dart';
 import 'package:clean_earth_project2/post_page.dart';
@@ -29,15 +30,15 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white,
         ),
       ),
-      home: const MyHomePage(title: 'Map Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key});
 
-  final String title;
+  //final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -49,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // List of pages
   final List<Widget> _pages = [
     SearchPage(),
-    PickImage(),//PostPage(),
+    PostPage(),
     SavedPage(),
     ProfilePage(),
   ];
@@ -59,10 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
     _currentIndex = (_currentIndex >= _pages.length) ? 0 : _currentIndex;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      //   title: Text(widget.title),
+      // ),
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,

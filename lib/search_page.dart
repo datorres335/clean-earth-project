@@ -10,27 +10,47 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-
+  String searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DraggableSheet(
-          child: Column(
-            children: [
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-            ],
-          )
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Search bar
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField( // TODO: need to correctly implement the search field
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value; // Update search query on input
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search Location...',
+                  prefixIcon: Icon(Icons.search),
+                  contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+              ),
+            ),
+            // Draggable Sheet
+            Expanded(
+              child: DraggableSheet(
+                child: Column(
+                  children: List.generate(
+                    10,
+                    (index) => BottomSheetDummyUI(),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
