@@ -2,11 +2,10 @@
 TODO: remove top app bar
  */
 
-import 'package:clean_earth_project2/image_picker_REFERENCE_ONLY.dart';
+import 'package:clean_earth_project2/edit_profile_page.dart';
 import 'package:clean_earth_project2/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_earth_project2/search_page.dart';
-import 'package:clean_earth_project2/post_page.dart';
 import 'package:clean_earth_project2/saved_page.dart';
 import 'package:clean_earth_project2/profile_page.dart';
 

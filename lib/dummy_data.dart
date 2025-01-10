@@ -134,6 +134,7 @@ class BottomSheetDummyUI extends StatelessWidget {
               const SizedBox(height: 10),
             ],
           ),
+          Divider(color: Colors.black54, thickness: 1),
         ],
       ),
     );

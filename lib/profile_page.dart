@@ -1,3 +1,4 @@
+import 'package:clean_earth_project2/edit_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_earth_project2/dummy_data.dart';
 
@@ -24,6 +25,10 @@ class _ProfilePageState extends State<ProfilePage> {
           TextButton(
               onPressed: () {
                 // TODO: Handle edit screen button action
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EditProfilePage()),
+                );
               },
             child: Text("Edit")
           )
