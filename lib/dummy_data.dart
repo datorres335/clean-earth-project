@@ -1,6 +1,7 @@
+import 'package:clean_earth_project2/mark_clean_bottom_sheet.dart';
 import 'package:clean_earth_project2/profile_page.dart';
 import 'package:flutter/material.dart';
-import 'show_comments_bottom_sheet.dart';
+import 'package:clean_earth_project2/show_comments_bottom_sheet.dart';
 
 // ************** DUMMY DATA FOR BOTTOM SHEET *********************
 class BottomSheetDummyUI extends StatelessWidget {
@@ -51,30 +52,57 @@ class BottomSheetDummyUI extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextButton(
-                onPressed: () {
-                  // TODO: must navigate to user's ProfilePage() once clicked
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProfilePage()),
-                  );
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.black12, // Background color
-                  padding: const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 2.0, right: 2.0),  // Add padding inside the button
-                  minimumSize: Size.zero, // Remove minimum size constraints
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrink tap target
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0), // Rounded corners
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      // TODO: must navigate to user's ProfilePage() once clicked
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ProfilePage()),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.black12, // Background color
+                      padding: const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 2.0, right: 2.0),  // Add padding inside the button
+                      minimumSize: Size.zero, // Remove minimum size constraints
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrink tap target
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0), // Rounded corners
+                      ),
+                    ),
+                    child: Text(
+                      "User:",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
-                ),
-                child: Text(
-                  "User:",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                  Spacer(),
+                  TextButton(
+                    onPressed: () {
+                      // TODO:
+                      markClean(context);
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.secondaryContainer, // Background color
+                      padding: const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 2.0, right: 2.0),  // Add padding inside the button
+                      minimumSize: Size.zero, // Remove minimum size constraints
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrink tap target
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0), // Rounded corners
+                      ),
+                    ),
+                    child: Text(
+                      "Mark Clean",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(height: 5),
               Text("Location:"),

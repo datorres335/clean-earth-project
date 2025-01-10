@@ -14,7 +14,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "<Username goes here>",
+          "<username goes here>",
           style: TextStyle(
             color: Colors.lightGreen[900], // Set text color to teal
             fontWeight: FontWeight.bold,
