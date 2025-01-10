@@ -69,16 +69,22 @@ class _PostPageState extends State<PostPage> {
                     ),
                   ),
                   //const SizedBox(height: 8),
-                  TextField(
-                    maxLength: 2200, // Limit the input to 2200 characters
-                    maxLines: 3, // Allow multi-line input
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Add a comment...',
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    child: TextField(
+                      maxLength: 2200, // Limit the input to 2200 characters
+                      maxLines: 3, // Allow multi-line input
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Add a comment...',
+                        hintStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), // Lighter color using theme
+                        ),
+                      ),
+                      onChanged: (value) {
+                        // You can handle the input value if needed
+                      },
                     ),
-                    onChanged: (value) {
-                      // You can handle the input value if needed
-                    },
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
