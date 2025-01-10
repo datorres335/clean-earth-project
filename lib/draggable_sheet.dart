@@ -213,7 +213,10 @@ class _DraggableSheetState extends State<DraggableSheet> {
                       margin: const EdgeInsets.only(top: 15, bottom: 15),
                       height: 5,
                       decoration: BoxDecoration(
-                        color: theme.onSurface.withOpacity(0.6), // Slightly transparent onSurface color
+                        color: Color.alphaBlend(
+                          theme.onSurface.withAlpha((0.6 * 255).toInt()),
+                          theme.surface,
+                        ),  // Slightly transparent onSurface color
                         shape: BoxShape.rectangle,
                         borderRadius: const BorderRadius.all(Radius.circular(8.0)),
                       ),
