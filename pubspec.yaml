@@ -41,6 +41,7 @@ dependencies:
   location: ^7.0.1
   flutter_polyline_points: ^2.1.0
   flutter_dotenv: ^5.2.1
+  google_geocoding_api: ^1.5.2
 
 
 dev_dependencies:
@@ -75,6 +76,7 @@ flutter:
   assets:
     - assets/clean_earth_icon3.png
     - assets/Temporary-Profile-Picture.jpg
+    - .env
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
