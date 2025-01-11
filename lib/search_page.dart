@@ -1,6 +1,7 @@
-/*
+/* *********************
 * uses the Column widget
-* */
+* **********************/
+// import 'package:clean_earth_project2/Google_Maps/map_page.dart';
 // import 'package:flutter/material.dart';
 // import 'draggable_sheet.dart';
 // import 'package:clean_earth_project2/dummy_data.dart';
@@ -18,44 +19,26 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
-//       body: SafeArea(
-//         child: Column(
-//           children: [
-//             // Search bar
-//             Padding(
-//               padding: const EdgeInsets.all(8.0),
-//               child: TextField( // TODO: need to correctly implement the search field
-//                 onChanged: (value) {
-//                   setState(() {
-//                     searchQuery = value; // Update search query on input
-//                   });
-//                 },
-//                 decoration: InputDecoration(
-//                   hintText: 'Search Location...',
-//                   prefixIcon: Icon(Icons.search),
-//                   contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
-//                   border: OutlineInputBorder(
-//                     borderRadius: BorderRadius.circular(8.0),
-//                   ),
+//       body: Column(
+//         children: [
+//           Expanded(
+//             child: Center(
+//               child: MapPage(),
+//             ),
+//           ),
+//
+//           // Draggable Sheet
+//           Expanded(
+//             child: DraggableSheet(
+//               child: Column(
+//                 children: List.generate(
+//                   10,
+//                   (index) => BottomSheetDummyUI(),
 //                 ),
 //               ),
 //             ),
-//
-//             Text("Google Maps goes here"),
-//
-//             // Draggable Sheet
-//             Expanded(
-//               child: DraggableSheet(
-//                 child: Column(
-//                   children: List.generate(
-//                     10,
-//                     (index) => BottomSheetDummyUI(),
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
+//           ),
+//         ],
 //       ),
 //     );
 //   }
@@ -139,11 +122,16 @@
 //     );
 //   }
 // }
+// import 'draggable_sheet.dart';
 
 
+/* *******************************
+* Uses the Stack widget. Version 2
+******************************* */
+import 'package:clean_earth_project2/Google_Maps/map_page.dart';
 import 'package:flutter/material.dart';
-import 'draggable_sheet.dart';
 import 'package:clean_earth_project2/dummy_data.dart';
+import 'draggable_sheet.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -158,60 +146,31 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            // Column for the search bar and placeholder text
-            Column(
-              children: [
-                // Search bar
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        searchQuery = value; // Update search query on input
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Search Location...',
-                      prefixIcon: Icon(Icons.search),
-                      contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                  ),
-                ),
-                // Google Maps placeholder
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(top:150),
-                    child: Text(
-                      "Google Maps goes here",
-                      style: TextStyle(fontSize: 16), // Optional: Style the text
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ],
+      body: Stack(
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 55.0),
+              child: MapPage(),
             ),
-            // Draggable Sheet positioned at the bottom
-            Positioned.fill(
-              child: Align(
-                alignment: Alignment.bottomCenter,
+          ),
+          // Draggable Sheet positioned at the bottom
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: SafeArea(
                 child: DraggableSheet(
                   child: Column(
                     children: List.generate(
                       10,
-                          (index) => BottomSheetDummyUI(),
+                      (index) => BottomSheetDummyUI(),
                     ),
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

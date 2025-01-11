@@ -199,34 +199,30 @@ class _DraggableSheetState extends State<DraggableSheet> {
 
   SliverToBoxAdapter topButtonIndicator(ColorScheme theme) {
     return SliverToBoxAdapter(
-      child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              child: Center(
-                child: Wrap(
-                  children: [
-                    Container(
-                      width: 100,
-                      margin: const EdgeInsets.only(top: 15, bottom: 15),
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: Color.alphaBlend(
-                          theme.onSurface.withAlpha((0.6 * 255).toInt()),
-                          theme.surface,
-                        ),  // Slightly transparent onSurface color
-                        shape: BoxShape.rectangle,
-                        borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                      ),
-                    ),
-                  ],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(
+            child: Wrap(
+              children: [
+                Container(
+                  width: 100,
+                  margin: const EdgeInsets.only(top: 15, bottom: 15),
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Color.alphaBlend(
+                      theme.onSurface.withAlpha((0.6 * 255).toInt()),
+                      theme.surface,
+                    ),  // Slightly transparent onSurface color
+                    shape: BoxShape.rectangle,
+                    borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

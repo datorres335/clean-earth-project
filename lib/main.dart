@@ -1,3 +1,7 @@
+/*
+TODO: remove top app bar
+ */
+
 import 'package:clean_earth_project2/edit_profile_page.dart';
 import 'package:clean_earth_project2/Google_Maps/map_page.dart';
 import 'package:clean_earth_project2/post_page.dart';
@@ -8,9 +12,7 @@ import 'package:clean_earth_project2/profile_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart'; //NEED THIS FOR THE API KEY LOCATED IN .env
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Ensures Flutter bindings are initialized
-  await dotenv.load(fileName: ".env"); // Specify the correct file name
-  print("Loaded API Key: ${dotenv.env['GOOGLE_MAPS_API_KEY']}");
+  await dotenv.load(); //NEED THIS FOR THE API KEY LOCATED IN .env
   // String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY']!; //NEED THIS FOR THE API KEY LOCATED IN .env
   runApp(const MyApp());
 }
@@ -31,7 +33,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white,
         ),
       ),
-      home: MapPage()//MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }

@@ -40,7 +40,7 @@ class _MapPageState extends State<MapPage> {
         children: [
           // Google Map
           _currentP == null
-              ? const Center(child: Text("Loading..."))
+              ? const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),))
               : GoogleMap(
             onMapCreated: (GoogleMapController controller) =>
                 _mapController.complete(controller),
@@ -55,22 +55,23 @@ class _MapPageState extends State<MapPage> {
                 position: _currentP!,
               ),
             },
+            zoomControlsEnabled: false, // Disable default zoom controls
           ),
+
           // Search Bar
           Positioned(
-            top: 40, // Adjust the position of the search bar
+            top: 45, // Adjust the position of the search bar
             left: 10,
             right: 10,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface, // Use app's color scheme
                 borderRadius: BorderRadius.circular(8.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4.0,
-                    spreadRadius: 2.0,
+                    color: Theme.of(context).colorScheme.shadow, // Use shadow color from the theme
+                    blurRadius: 0.5,
+                    spreadRadius: 0.5,
                   ),
                 ],
               ),
@@ -78,8 +79,19 @@ class _MapPageState extends State<MapPage> {
                 controller: _searchController,
                 decoration: InputDecoration(
                   hintText: 'Search location...',
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.all(3.0), // Adjust padding as needed
+                    child: Image.asset(
+                      'assets/clean_earth_icon_no_background.png', // Path to your custom image
+                      width: 30, // Adjust the width
+                      height: 30, // Adjust the height
+                    ),
+                  ),
                   border: InputBorder.none,
+                  hintStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6), // Hint text color
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0), // Adjust padding
                 ),
                 onSubmitted: (value) {
                   _searchLocation(value);
@@ -87,18 +99,71 @@ class _MapPageState extends State<MapPage> {
               ),
             ),
           ),
-          // Floating Action Button positioned above the map controls
+
+          // Floating Action Button and Zoom Controls
           Positioned(
-            bottom: 100, // Adjust to position above the zoom controls
-            right: 8, // Adjust to align with the right side
-            child: FloatingActionButton(
-              mini: true, // Makes the button smaller
-              onPressed: () {
-                if (_currentP != null) {
-                  _cameraToPosition(_currentP!); // Trigger camera movement when pressed
-                }
-              },
-              child: const Icon(Icons.my_location),
+            top: 110, // Place this right below the search bar
+            right: 10,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  mini: true, // Makes the button smaller
+                  onPressed: () {
+                    if (_currentP != null) {
+                      _cameraToPosition(_currentP!); // Trigger camera movement when pressed
+                    }
+                  },
+                  child: const Icon(Icons.my_location),
+                ),
+                const SizedBox(height: 8), // Spacing between FAB and zoom controls
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface, // Use app's color scheme
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.shadow,
+                        blurRadius: 0.5,
+                        //spreadRadius: 0.1,
+                      ),
+                    ],
+                  ),
+                  child: SizedBox(
+                    width: 40,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 40,
+                          child: IconButton(
+                            icon: const Icon(Icons.add),
+                            onPressed: () async {
+                              final GoogleMapController controller =
+                              await _mapController.future;
+                              controller.animateCamera(
+                                CameraUpdate.zoomIn(),
+                              );
+                            },
+                          ),
+                        ),
+                        const Divider(height: 1),
+                        SizedBox(
+                          height: 40,
+                          child: IconButton(
+                            icon: const Icon(Icons.remove),
+                            onPressed: () async {
+                              final GoogleMapController controller =
+                              await _mapController.future;
+                              controller.animateCamera(
+                                CameraUpdate.zoomOut(),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
