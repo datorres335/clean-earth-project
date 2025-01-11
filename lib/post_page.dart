@@ -156,7 +156,7 @@ class _PostPageState extends State<PostPage> {
 // import 'dart:io';
 // import 'package:flutter/material.dart';
 // import 'package:file_picker/file_picker.dart';
-// import 'package:image_picker/image_picker_REFERENCE_ONLY.dart';
+// import 'package:image_picker/image_picker_TUTORIAL.dart';
 //
 // class PickImage extends StatefulWidget {
 //   const PickImage({super.key});

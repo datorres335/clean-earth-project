@@ -9,8 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:clean_earth_project2/search_page.dart';
 import 'package:clean_earth_project2/saved_page.dart';
 import 'package:clean_earth_project2/profile_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; //NEED THIS FOR THE API KEY LOCATED IN .env
 
-void main() {
+void main() async {
+  // await dotenv.load(); //NEED THIS FOR THE API KEY LOCATED IN .env
+  // String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY']!; //NEED THIS FOR THE API KEY LOCATED IN .env
   runApp(const MyApp());
 }
 
