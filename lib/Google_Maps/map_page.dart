@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:clean_earth_project2/Google_Maps/scale_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -17,6 +18,7 @@ class _MapPageState extends State<MapPage> {
   final Completer<GoogleMapController> _mapController =
   Completer<GoogleMapController>();
   LatLng? _currentP;
+  double _currentZoom = 13.0; // Track the current zoom level scale bar
   final TextEditingController _searchController = TextEditingController();
 
   // Load the API key from dotenv
@@ -44,9 +46,14 @@ class _MapPageState extends State<MapPage> {
               : GoogleMap(
             onMapCreated: (GoogleMapController controller) =>
                 _mapController.complete(controller),
+            // onCameraMove: (CameraPosition position) { // SCALE BAR NOT YET WORKING PROPERLY
+            //   setState(() {
+            //     _currentZoom = position.zoom; // Update zoom level for scale bar
+            //   });
+            // },
             initialCameraPosition: CameraPosition(
               target: _currentP!,
-              zoom: 13, // Adjust zoom level
+              zoom: _currentZoom, // Adjust zoom level
             ),
             markers: {
               Marker(
@@ -166,6 +173,13 @@ class _MapPageState extends State<MapPage> {
               ],
             ),
           ),
+
+          // Scale Bar (NOT WORKING PROPERLY)
+          // Positioned(
+          //   bottom: 20,
+          //   left: 20,
+          //   child: ScaleBar(zoomLevel: _currentZoom)//CustomScaleBar(zoomLevel: _currentZoom), // Add the scale bar
+          // ),
         ],
       ),
     );
