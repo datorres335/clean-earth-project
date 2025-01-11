@@ -3,6 +3,7 @@ TODO: remove top app bar
  */
 
 import 'package:clean_earth_project2/edit_profile_page.dart';
+import 'package:clean_earth_project2/Google_Maps/map_page.dart';
 import 'package:clean_earth_project2/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_earth_project2/search_page.dart';
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white,
         ),
       ),
-      home: MyHomePage(),
+      home: MapPage()//MyHomePage(),
     );
   }
 }
