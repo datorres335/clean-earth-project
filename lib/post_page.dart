@@ -1,6 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:location/location.dart';
+import 'package:intl/intl.dart'; // For formatting date
+import 'package:google_geocoding_api/google_geocoding_api.dart'; // For reverse geocoding
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -11,6 +15,78 @@ class PostPage extends StatefulWidget {
 
 class _PostPageState extends State<PostPage> {
   final List<File> _images = []; // List to store images
+  String? _currentDate;
+  String? _currentCityState;
+  String? _currentCoordinates;
+
+  final Location _location = Location();
+  late final GoogleGeocodingApi _geocodingApi;
+
+  @override
+  void initState() {
+    super.initState();
+    _geocodingApi = GoogleGeocodingApi(dotenv.env['GOOGLE_MAPS_API_KEY']!);
+    _fetchLocationAndDetails();
+  }
+
+  Future<void> _fetchLocationAndDetails() async {
+    try {
+      bool _serviceEnabled = await _location.serviceEnabled();
+      if (!_serviceEnabled) {
+        _serviceEnabled = await _location.requestService();
+        if (!_serviceEnabled) return;
+      }
+
+      PermissionStatus _permissionGranted = await _location.hasPermission();
+      if (_permissionGranted == PermissionStatus.denied) {
+        _permissionGranted = await _location.requestPermission();
+        if (_permissionGranted != PermissionStatus.granted) return;
+      }
+
+      LocationData locationData = await _location.getLocation();
+
+      final double latitude = locationData.latitude!;
+      final double longitude = locationData.longitude!;
+      setState(() {
+        _currentCoordinates =
+        "${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}";
+        _currentDate = DateFormat.yMMMMd().format(DateTime.now());
+      });
+
+      final response = await _geocodingApi.reverse(
+        '${latitude.toStringAsFixed(5)},${longitude.toStringAsFixed(5)}',
+      );
+
+      if (response.results.isNotEmpty) {
+        final result = response.results.first;
+
+        // Extract city and state
+        String? city = result.addressComponents.firstWhere(
+              (component) => component.types.contains('locality'),
+          orElse: () => GoogleGeocodingAddressComponent(
+            longName: '',
+            shortName: '',
+            types: [],
+          ),
+        ).longName;
+
+        String? state = result.addressComponents.firstWhere(
+              (component) => component.types.contains('administrative_area_level_1'),
+          orElse: () => GoogleGeocodingAddressComponent(
+            longName: '',
+            shortName: '',
+            types: [],
+          ),
+        ).shortName;
+
+        setState(() {
+          _currentCityState = "$city, $state";
+        });
+      }
+    } catch (e) {
+      print("Error fetching location or details: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +104,6 @@ class _PostPageState extends State<PostPage> {
         children: [
           // Scrolling grid of images
           Expanded(
-            //flex: 3,
             child: _images.isEmpty
                 ? const Center(
               child: Text(
@@ -38,7 +113,8 @@ class _PostPageState extends State<PostPage> {
             )
                 : GridView.builder(
               padding: const EdgeInsets.all(8.0),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate:
+              const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3, // Number of columns
                 crossAxisSpacing: 8.0,
                 mainAxisSpacing: 8.0,
@@ -52,76 +128,112 @@ class _PostPageState extends State<PostPage> {
               },
             ),
           ),
-          // Buttons for Gallery and Camera
+          // Location and date details
           Padding(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
-                // mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: const Text(
-                        "Comment:",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ),
-                  //const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                    child: TextField(
-                      maxLength: 2200, // Limit the input to 2200 characters
-                      maxLines: 3, // Allow multi-line input
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Add a comment...',
-                        hintStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), // Lighter color using theme
-                        ),
-                      ),
-                      onChanged: (value) {
-                        // You can handle the input value if needed
-                      },
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
                     children: [
-                      ElevatedButton.icon(
-                        onPressed: _pickImageFromGallery,
-                        icon: const Icon(Icons.image),
-                        label: const Text('Gallery'),
+                      const TextSpan(
+                        text: "Date: ",
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      ElevatedButton.icon(
-                        onPressed: _pickImageFromCamera,
-                        icon: const Icon(Icons.camera_alt),
-                        label: const Text('Camera'),
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: (){
-                          // TODO!!! Need to make the description as the first comment of the post
-                        },
-                        icon: const Icon(Icons.post_add_outlined),
-                        label: const Text('Post'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[300], // Darker background color// Text and icon color
-                          //foregroundColor: Colors.black, // Text and icon color
-                          elevation: 5, // Drop shadow elevation
-                          shadowColor: Colors.grey[600], // Shadow color
-                          side: BorderSide(
-                            color: Colors.grey[700]!, // Darker outline color
-                            width: 2, // Thickness of the outline
-                          ),
-                        ),
+                      TextSpan(
+                        text: _currentDate ?? 'Loading...',
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    children: [
+                      const TextSpan(
+                        text: "City, State: ",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: _currentCityState ?? 'Loading...',
+                      ),
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    children: [
+                      const TextSpan(
+                        text: "Coordinates: ",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: _currentCoordinates ?? 'Loading...',
+                      ),
+                    ],
+                  ),
+                ),
+                const Text(
+                  "Comment:",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                TextField(
+                  maxLength: 2200, // Limit the input to 2200 characters
+                  maxLines: 3, // Allow multi-line input
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Add a comment...',
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), // Lighter color using theme
+                    ),
+                  ),
+                  onChanged: (value) {
+                    // Handle input value if needed
+                  },
+                ),
+              ],
+            ),
           ),
 
+          // Buttons for Gallery and Camera
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: _pickImageFromGallery,
+                  icon: const Icon(Icons.image),
+                  label: const Text('Gallery'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: _pickImageFromCamera,
+                  icon: const Icon(Icons.camera_alt),
+                  label: const Text('Camera'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // TODO: Implement post functionality
+                  },
+                  icon: const Icon(Icons.post_add_outlined),
+                  label: const Text('Post'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[300], // Darker background color
+                    elevation: 5, // Drop shadow elevation
+                    shadowColor: Colors.grey[600], // Shadow color
+                    side: BorderSide(
+                      color: Colors.grey[700]!, // Darker outline color
+                      width: 2, // Thickness of the outline
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -129,7 +241,8 @@ class _PostPageState extends State<PostPage> {
 
   // Pick image from gallery
   Future<void> _pickImageFromGallery() async {
-    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedImage =
+    await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedImage != null && _images.length < 15) {
       setState(() {
         _images.insert(0, File(pickedImage.path)); // Add image to the top of the list
@@ -139,7 +252,8 @@ class _PostPageState extends State<PostPage> {
 
   // Pick image from camera
   Future<void> _pickImageFromCamera() async {
-    final pickedImage = await ImagePicker().pickImage(source: ImageSource.camera);
+    final pickedImage =
+    await ImagePicker().pickImage(source: ImageSource.camera);
     if (pickedImage != null && _images.length < 15) {
       setState(() {
         _images.insert(0, File(pickedImage.path)); // Add image to the top of the list
