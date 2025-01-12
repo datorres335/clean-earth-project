@@ -1,14 +1,19 @@
-/*
-TODO: remove top app bar
- */
-
+import 'package:clean_earth_project2/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_earth_project2/search_page.dart';
-import 'package:clean_earth_project2/post_page.dart';
 import 'package:clean_earth_project2/saved_page.dart';
 import 'package:clean_earth_project2/profile_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; //NEED THIS FOR THE API KEY LOCATED IN .env
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await dotenv.load(); //NEED THIS FOR THE API KEY LOCATED IN .env
+  // String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY']!; //NEED THIS FOR THE API KEY LOCATED IN .env
   runApp(const MyApp());
 }
 
@@ -20,7 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Clean Earth Project',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
         useMaterial3: true,
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           selectedItemColor: Colors.teal,
@@ -28,15 +33,15 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white,
         ),
       ),
-      home: const MyHomePage(title: 'Map Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key});
 
-  final String title;
+  //final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -58,10 +63,10 @@ class _MyHomePageState extends State<MyHomePage> {
     _currentIndex = (_currentIndex >= _pages.length) ? 0 : _currentIndex;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      //   title: Text(widget.title),
+      // ),
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
@@ -69,7 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
-          //print("Tapped on index!!!!!!!!!!!!!: $index");
           setState(() {
             _currentIndex = index;
           });

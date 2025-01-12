@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clean_earth_project2/dummy_data.dart';
 
 class SavedPage extends StatefulWidget {
   const SavedPage({super.key});
@@ -10,10 +11,24 @@ class SavedPage extends StatefulWidget {
 class _SavedPageState extends State<SavedPage> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Saved Posts Page (updated)',
-        style: TextStyle(fontSize: 24),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Saved Posts",
+          style: TextStyle(
+            color: Colors.lightGreen[900], // Set text color to teal
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: ListView.builder(
+          padding: const EdgeInsets.all(8.0),
+          itemCount: 10, // Number of items in the list
+          itemBuilder: (context, index) {
+            return BottomSheetDummyUI();
+          },
+        ),
       ),
     );
   }

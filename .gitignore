@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# API keys
+lib/Google_Maps/secret_keys.dart
+.env

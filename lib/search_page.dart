@@ -1,4 +1,136 @@
+/* *********************
+* uses the Column widget
+* **********************/
+// import 'package:clean_earth_project2/Google_Maps/map_page.dart';
+// import 'package:flutter/material.dart';
+// import 'draggable_sheet.dart';
+// import 'package:clean_earth_project2/dummy_data.dart';
+//
+// class SearchPage extends StatefulWidget {
+//   const SearchPage({super.key});
+//
+//   @override
+//   State<SearchPage> createState() => _SearchPageState();
+// }
+//
+// class _SearchPageState extends State<SearchPage> {
+//   String searchQuery = '';
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Column(
+//         children: [
+//           Expanded(
+//             child: Center(
+//               child: MapPage(),
+//             ),
+//           ),
+//
+//           // Draggable Sheet
+//           Expanded(
+//             child: DraggableSheet(
+//               child: Column(
+//                 children: List.generate(
+//                   10,
+//                   (index) => BottomSheetDummyUI(),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+
+/*
+* Uses the Stack widget
+* */
+// import 'package:flutter/material.dart';
+// import 'draggable_sheet.dart';
+// import 'package:clean_earth_project2/dummy_data.dart';
+//
+// class SearchPage extends StatefulWidget {
+//   const SearchPage({super.key});
+//
+//   @override
+//   State<SearchPage> createState() => _SearchPageState();
+// }
+//
+// class _SearchPageState extends State<SearchPage> {
+//   String searchQuery = '';
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: SafeArea(
+//         child: Stack(
+//           children: [
+//             Column(
+//               children: [
+//                 // Search bar
+//                 Padding(
+//                   padding: const EdgeInsets.all(8.0),
+//                   child: TextField(
+//                     onChanged: (value) {
+//                       setState(() {
+//                         searchQuery = value; // Update search query on input
+//                       });
+//                     },
+//                     decoration: InputDecoration(
+//                       hintText: 'Search Location...',
+//                       prefixIcon: Icon(Icons.search),
+//                       contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
+//                       border: OutlineInputBorder(
+//                         borderRadius: BorderRadius.circular(8.0),
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//                 // Draggable Sheet
+//                 Expanded(
+//                   child: DraggableSheet(
+//                     child: Column(
+//                       children: List.generate(
+//                         10,
+//                             (index) => BottomSheetDummyUI(),
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             // Google Maps placeholder with independent padding
+//             Positioned(
+//               top: 100, // Adjust as needed to position the text
+//               left: 16,
+//               right: 16,
+//               child: Padding(
+//                 padding: const EdgeInsets.symmetric(vertical: 16.0),
+//                 child: Text(
+//                   "Google Maps goes here",
+//                   style: TextStyle(fontSize: 16), // Optional: Style the text
+//                   textAlign: TextAlign.center,
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+// import 'draggable_sheet.dart';
+
+
+/* *******************************
+* Uses the Stack widget. Version 2
+******************************* */
+import 'package:clean_earth_project2/Google_Maps/map_page.dart';
 import 'package:flutter/material.dart';
+import 'package:clean_earth_project2/dummy_data.dart';
 import 'draggable_sheet.dart';
 
 class SearchPage extends StatefulWidget {
@@ -9,80 +141,37 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-
+  String searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DraggableSheet(
-          child: Column(
-            children: [
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-              BottomSheetDummyUI(),
-            ],
-          )
-      ),
-    );
-  }
-}
-
-// ************** DUMMY DATA FOR BOTTOM SHEET *********************
-class BottomSheetDummyUI extends StatelessWidget {
-  const BottomSheetDummyUI({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Container(
-          padding: EdgeInsets.only(left: 30, right: 30),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(15.0),
-                    child: Container(
-                      color: Colors.black12,
-                      height: 100,
-                      width: 100,
+      body: Stack(
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 55.0),
+              child: MapPage(),
+            ),
+          ),
+          // Draggable Sheet positioned at the bottom
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: SafeArea(
+                child: DraggableSheet(
+                  child: Column(
+                    children: List.generate(
+                      10,
+                      (index) => BottomSheetDummyUI(),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(15.0),
-                        child: Container(
-                          color: Colors.black12,
-                          height: 20,
-                          width: 240,
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(15.0),
-                        child: Container(
-                          color: Colors.black12,
-                          height: 20,
-                          width: 180,
-                        ),
-                      ),
-                      SizedBox(height: 50),
-                    ],
-                  )
-                ],
+                ),
               ),
-              SizedBox(height: 10),
-            ],
-          )),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
