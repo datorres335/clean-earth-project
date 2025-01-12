@@ -206,7 +206,7 @@ class _PostPageState extends State<PostPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton.icon(
-                  onPressed: _pickImageFromGallery,
+                  onPressed: _pickImagesFromGallery,
                   icon: const Icon(Icons.image),
                   label: const Text('Gallery'),
                 ),
@@ -239,13 +239,11 @@ class _PostPageState extends State<PostPage> {
     );
   }
 
-  // Pick image from gallery
-  Future<void> _pickImageFromGallery() async {
-    final pickedImage =
-    await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedImage != null && _images.length < 15) {
+  Future<void> _pickImagesFromGallery() async {
+    final List<XFile>? pickedFiles = await ImagePicker().pickMultiImage();
+    if (pickedFiles != null && pickedFiles.isNotEmpty && _images.length < 15) {
       setState(() {
-        _images.insert(0, File(pickedImage.path)); // Add image to the top of the list
+        _images.addAll(pickedFiles.map((file) => File(file.path)));
       });
     }
   }
