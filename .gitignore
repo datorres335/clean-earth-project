@@ -47,3 +47,4 @@ app.*.map.json
 # API keys
 lib/Google_Maps/secret_keys.dart
 .env
+lib/firebase_options.dart
