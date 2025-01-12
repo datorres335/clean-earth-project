@@ -174,6 +174,17 @@ class _MapPageState extends State<MapPage> {
             ),
           ),
 
+          // LOGO
+          Positioned(
+            bottom: -55,
+            left: 250,
+            child: Image.asset(
+              'assets/clean_earth_text3.png', // Path to your custom image
+              width: 150, // Adjust the width
+              height: 150, // Adjust the height
+            ),
+          ),
+
           // Scale Bar (NOT WORKING PROPERLY)
           // Positioned(
           //   bottom: 20,
