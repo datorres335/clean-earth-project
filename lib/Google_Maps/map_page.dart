@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:clean_earth_project2/Google_Maps/scale_bar.dart';
+// import 'package:clean_earth_project2/Google_Maps/scale_bar.dart'; //not yet working
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -176,12 +176,19 @@ class _MapPageState extends State<MapPage> {
 
           // LOGO
           Positioned(
-            bottom: -55,
-            left: 250,
-            child: Image.asset(
-              'assets/clean_earth_text3.png', // Path to your custom image
-              width: 150, // Adjust the width
-              height: 150, // Adjust the height
+            bottom: -60, // Adjust to position above the bottom edge
+            right: 15, // Adjust to position near the right edge
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                double screenWidth = MediaQuery.of(context).size.width;
+                double imageWidth = screenWidth * 0.4; // 30% of the screen width
+                return Image.asset(
+                  'assets/clean_earth_text3.png', // Path to your custom image
+                  width: imageWidth, // Dynamically adjust the width
+                  height: imageWidth, // Maintain a square aspect ratio
+                  fit: BoxFit.contain, // Ensure the image scales proportionally
+                );
+              },
             ),
           ),
 

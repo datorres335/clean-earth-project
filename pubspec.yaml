@@ -43,6 +43,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
   google_geocoding_api: ^1.5.2
   intl: ^0.18.0
+  firebase_core: ^3.10.0
 
 
 dev_dependencies:

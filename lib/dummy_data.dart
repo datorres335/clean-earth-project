@@ -32,7 +32,7 @@ class BottomSheetDummyUI extends StatelessWidget {
                         alignment: Alignment.center, // Center-aligns the text
                         children: [
                           Text(
-                            'Picture', // Replace with your desired text
+                            'Picture',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -80,13 +80,72 @@ class BottomSheetDummyUI extends StatelessWidget {
                     ),
                   ),
                   Spacer(),
+                  Column(
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          // TODO:
+                          markClean(context);
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.secondaryContainer, // Background color
+                          padding: const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 2.0, right: 2.0),  // Add padding inside the button
+                          minimumSize: Size.zero, // Remove minimum size constraints
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrink tap target
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0), // Rounded corners
+                          ),
+                        ),
+                        child: Text(
+                          "Mark Clean",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5),
+              Text("Date:"),
+              const SizedBox(height: 5),
+              Text("City, State:"),
+              const SizedBox(height: 5),
+              Text("Coordinates:"),
+              const SizedBox(height: 5),
+              Row(
+                children: [
                   TextButton(
                     onPressed: () {
-                      // TODO:
-                      markClean(context);
+                      // TODO: must open showModalBottomSheet once clicked to show post's comments
+                      showComments(context);
                     },
                     style: TextButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.secondaryContainer, // Background color
+                      backgroundColor: Colors.black12, // Background color
+                      padding: const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 2.0, right: 2.0), // Add padding inside the button
+                      minimumSize: Size.zero, // Remove minimum size constraints
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrink tap target
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0), // Rounded corners
+                      ),
+                    ),
+                    child: Text(
+                      "Comments:",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold, // Text color
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  TextButton(
+                    onPressed: () {
+                      // TODO: need to save post to user's Saved page
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.red[200], // Background color
                       padding: const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 2.0, right: 2.0),  // Add padding inside the button
                       minimumSize: Size.zero, // Remove minimum size constraints
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrink tap target
@@ -95,7 +154,7 @@ class BottomSheetDummyUI extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      "Mark Clean",
+                      "Save",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
@@ -103,33 +162,6 @@ class BottomSheetDummyUI extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 5),
-              Text("Location:"),
-              const SizedBox(height: 5),
-              Text("Date:"),
-              const SizedBox(height: 5),
-              TextButton(
-                onPressed: () {
-                  // TODO: must open showModalBottomSheet once clicked to show post's comments
-                  showComments(context);
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.black12, // Background color
-                  padding: const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 2.0, right: 2.0), // Add padding inside the button
-                  minimumSize: Size.zero, // Remove minimum size constraints
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrink tap target
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0), // Rounded corners
-                  ),
-                ),
-                child: Text(
-                  "Comments:",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold, // Text color
-                    color: Colors.black,
-                  ),
-                ),
               ),
               const SizedBox(height: 10),
             ],

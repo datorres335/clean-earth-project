@@ -1,17 +1,17 @@
-/*
-TODO: remove top app bar
- */
-
-import 'package:clean_earth_project2/edit_profile_page.dart';
-import 'package:clean_earth_project2/Google_Maps/map_page.dart';
 import 'package:clean_earth_project2/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_earth_project2/search_page.dart';
 import 'package:clean_earth_project2/saved_page.dart';
 import 'package:clean_earth_project2/profile_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart'; //NEED THIS FOR THE API KEY LOCATED IN .env
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await dotenv.load(); //NEED THIS FOR THE API KEY LOCATED IN .env
   // String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY']!; //NEED THIS FOR THE API KEY LOCATED IN .env
   runApp(const MyApp());
