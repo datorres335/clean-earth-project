@@ -15,7 +15,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await dotenv.load(); //NEED THIS FOR THE API KEY LOCATED IN .env
-  // String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY']!; //NEED THIS FOR THE API KEY LOCATED IN .env
+  //String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY']!; //NEED THIS FOR THE API KEY LOCATED IN .env
+
   runApp(const MyApp());
 }
 
@@ -43,7 +44,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
-  //final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();

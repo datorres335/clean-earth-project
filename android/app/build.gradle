@@ -1,3 +1,5 @@
+
+
 plugins {
     id "com.android.application"
     // START: FlutterFire Configuration
@@ -9,6 +11,8 @@ plugins {
 }
 
 android {
+    def googleMapsApiKey = project.hasProperty('google.maps.api.key') ? project['google.maps.api.key'] : null
+
     namespace = "com.cleanearthproject.clean_earth_project2"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
