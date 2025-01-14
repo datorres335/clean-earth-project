@@ -1,4 +1,5 @@
 import 'package:clean_earth_project2/edit_profile_page.dart';
+import 'package:clean_earth_project2/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_earth_project2/dummy_data.dart';
 
@@ -27,10 +28,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 // TODO: Handle edit screen button action
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => EditProfilePage()),
+                  MaterialPageRoute(builder: (context) => LoginPage()),
                 );
               },
-            child: Text("Edit")
+            child: Text("Login")
           )
         ],
       ),
@@ -38,40 +39,61 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0), // Add some padding around the row
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0), // Add some padding around the row
+              child: Column(
                 children: [
-                  // Profile picture
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage('assets/Temporary-Profile-Picture.jpg'),
-                  ),
-                  SizedBox(width: 16), // Add spacing between the avatar and the column
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "User's Full Name", // Replace with dynamic data
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis, // Handle text overflow gracefully
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Profile picture
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundImage: AssetImage('assets/Temporary-Profile-Picture.jpg'),
+                      ),
+                      SizedBox(width: 16), // Add spacing between the avatar and the column
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "User's Full Name", // Replace with dynamic data
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis, // Handle text overflow gracefully
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              "Bio: This is a short bio (max 150 characters).",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                              overflow: TextOverflow.ellipsis, // Handle text overflow gracefully
+                              maxLines: 2, // Limit the bio to 2 lines
+                            ),
+                            //SizedBox(height: 8), // Add spacing between the bio and the button
+                            Align(
+                              alignment: Alignment.centerRight, // Moves the button to the left side
+                              child: TextButton(
+                                onPressed: () {
+                                  // TODO: Handle edit screen button action
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => EditProfilePage()),
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero, // Remove default padding
+                                ),
+                                child: Text("Edit Profile"),
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 8),
-                        Text(
-                          "Bio: This is a short bio (max 150 characters).",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                          overflow: TextOverflow.ellipsis, // Handle text overflow gracefully
-                          maxLines: 2, // Limit the bio to 2 lines
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),

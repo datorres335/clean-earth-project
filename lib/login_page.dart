@@ -102,15 +102,17 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
+              const SizedBox(height: 16), // Space between Password input and Login
 
               // Login and Sign Up Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center, // Center-aligns the buttons vertically
                 children: [
                   // Login Button
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 64.0),
+                    child: SizedBox(
+                      width: double.infinity, // Makes the button as wide as its parent container
                       child: ElevatedButton(
                         onPressed: () {
                           // TODO: need to implement functionality where the user stays logged in even after they close the app ("Persisting authentication state")
@@ -143,23 +145,25 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
 
+                  const SizedBox(height: 16), // Space between Login and "Or"
+
+                  Text(
+                    "Or",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ), // Centered text between the buttons
+
+                  const SizedBox(height: 16), // Space between "Or" and Sign Up
+
                   // Sign Up Button
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: OutlinedButton(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 64.0),
+                    child: SizedBox(
+                      width: double.infinity, // Makes the button as wide as its parent container
+                      child: FilledButton(
                         onPressed: () {
-                          // FirebaseAuth.instance
-                          //     .createUserWithEmailAndPassword(
-                          //   email: usernameController.text,
-                          //   password: passwordController.text,
-                          // )
-                          //     .then((value) {
-                          //   print("Successfully signed up the user");
-                          // }).catchError((error) {
-                          //   print("Failed to sign up user");
-                          //   print(error.toString());
-                          // });
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => SignUpPage()),
