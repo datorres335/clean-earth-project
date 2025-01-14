@@ -17,7 +17,7 @@ class _ProfilePageState extends State<ProfilePage> {
         title: Text(
           "<username goes here>",
           style: TextStyle(
-            color: Colors.lightGreen[900], // Set text color to teal
+            color: Theme.of(context).colorScheme.primary, // Set text color to teal
             fontWeight: FontWeight.bold,
           ),
         ),

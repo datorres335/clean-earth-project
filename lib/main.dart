@@ -1,4 +1,6 @@
+import 'package:clean_earth_project2/login_page.dart';
 import 'package:clean_earth_project2/post_page.dart';
+import 'package:clean_earth_project2/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_earth_project2/search_page.dart';
 import 'package:clean_earth_project2/saved_page.dart';
@@ -25,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Clean Earth Project',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
         useMaterial3: true,
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           selectedItemColor: Colors.teal,

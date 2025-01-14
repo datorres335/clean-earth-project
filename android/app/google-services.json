@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "657146195047",
-    "project_id": "clean-earth-project-929d9",
-    "storage_bucket": "clean-earth-project-929d9.firebasestorage.app"
+    "project_number": "499129756262",
+    "project_id": "clean-earth-project-39fcb",
+    "storage_bucket": "clean-earth-project-39fcb.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:657146195047:android:321664f9a24e86973038c2",
+        "mobilesdk_app_id": "1:499129756262:android:58c66ce708787f9da6dba7",
         "android_client_info": {
           "package_name": "com.cleanearthproject.clean_earth_project2"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB-3PXxfIrqD-8_wFec7kWR3knklm1tnv4"
+          "current_key": "AIzaSyD0AtTWi5WlgZK6RWwSUGTX-jeQC3p0UbM"
         }
       ],
       "services": {
