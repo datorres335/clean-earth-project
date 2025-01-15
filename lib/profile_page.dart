@@ -18,6 +18,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String fullName = "<loading full name>"; // Placeholder for user's full name
   String bio = "Bio not available"; // Placeholder for bio
   String memberSince = "Loading..."; // Placeholder for member since date
+  String? _profileImageUrl;
 
   @override
   void initState() {
@@ -42,6 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
             final lastName = data?['lastName'] ?? "User";
             fullName = "$firstName $lastName"; // Combine first and last name
             bio = data?['bio'] ?? "No bio available";
+            _profileImageUrl = data?['profilePicture'];
 
             // Format the createdAt timestamp
             final createdAt = data?['createdAt'];
@@ -153,10 +155,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Profile picture
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 40,
-                        backgroundImage:
-                        AssetImage('assets/Temporary-Profile-Picture.jpg'),
+                        backgroundImage: _profileImageUrl != null
+                            ? NetworkImage(_profileImageUrl!)
+                            : const AssetImage('assets/Temporary-Profile-Picture.jpg') as ImageProvider,
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -330,8 +333,5 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
-
-
-// TEST CODE ******************************************************************************************8
 
 
