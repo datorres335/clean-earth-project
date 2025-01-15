@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For storing user details
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:intl/intl.dart';
+
+import 'main.dart'; // For date formatting
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -222,6 +224,7 @@ class _SignUpPageState extends State<SignUpPage> {
         'dateOfBirth': dateOfBirth != null ? DateFormat('yyyy-MM-dd').format(dateOfBirth!) : null,
         'email': emailController.text,
         'createdAt': FieldValue.serverTimestamp(),
+        'bio' : "",
       }).then((value){
         print("Successfully added user to Firestore");
       }).catchError((error){
@@ -230,7 +233,10 @@ class _SignUpPageState extends State<SignUpPage> {
       });
 
       print("Successfully signed up user");
-      Navigator.pop(context); // Navigate back to the previous screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MyHomePage()),
+      );
     } catch (e) {
       print("Failed to sign up user: $e");
     }
