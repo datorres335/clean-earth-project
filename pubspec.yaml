@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   camera: ^0.11.0+2 # ARE YOU ACTUALLY USING THIS DEPENDENCY???
   image_picker: ^1.1.2
-  file_picker: ^8.1.7 # NEED TO FIGURE OUT HOW TO SWAP OUT image_picker WITH file_picker (MAYBE)
+  # file_picker: ^8.1.7 # probably won't need this
   google_maps_flutter: ^2.10.0
   location: ^7.0.1
   flutter_polyline_points: ^2.1.0
@@ -44,6 +44,9 @@ dependencies:
   google_geocoding_api: ^1.5.2
   intl: ^0.18.0
   firebase_core: ^3.10.0
+  firebase_auth: ^5.4.0
+  cloud_firestore: ^5.6.1
+  firebase_storage: ^12.4.0
 
 
 dev_dependencies:

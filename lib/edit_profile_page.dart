@@ -13,9 +13,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Editing Profile",
+          "Edit Profile",
           style: TextStyle(
-            color: Colors.lightGreen[900], // Set text color to teal
+            color: Theme.of(context).colorScheme.primary, // Set text color to teal
             fontWeight: FontWeight.bold,
           ),
         ),

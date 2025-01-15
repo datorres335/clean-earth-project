@@ -95,7 +95,7 @@ class _PostPageState extends State<PostPage> {
         title: Text(
           "New Post",
           style: TextStyle(
-            color: Colors.lightGreen[900], // Set text color to teal
+            color: Theme.of(context).colorScheme.primary, // Set text color to teal
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -258,4 +258,9 @@ class _PostPageState extends State<PostPage> {
       });
     }
   }
-}
+
+  //function below from video "Flutter Tutorial for Beginners 24 - Firebase Firestore and Firebase Storage" 48:00
+  Future<void> _uploadFileToFBStorage(File file) async {
+   // ehh chatGPT on how to do this
+  }
+} //_PostPageState

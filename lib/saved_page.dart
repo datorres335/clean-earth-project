@@ -16,7 +16,7 @@ class _SavedPageState extends State<SavedPage> {
         title: Text(
           "Saved Posts",
           style: TextStyle(
-            color: Colors.lightGreen[900], // Set text color to teal
+            color: Theme.of(context).colorScheme.primary, // Set text color to teal
             fontWeight: FontWeight.bold,
           ),
         ),
