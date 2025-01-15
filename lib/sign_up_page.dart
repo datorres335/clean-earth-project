@@ -222,6 +222,11 @@ class _SignUpPageState extends State<SignUpPage> {
         'dateOfBirth': dateOfBirth != null ? DateFormat('yyyy-MM-dd').format(dateOfBirth!) : null,
         'email': emailController.text,
         'createdAt': FieldValue.serverTimestamp(),
+      }).then((value){
+        print("Successfully added user to Firestore");
+      }).catchError((error){
+        print("Failed to save to Firestore");
+        print(error);
       });
 
       print("Successfully signed up user");
