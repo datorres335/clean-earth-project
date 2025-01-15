@@ -1,4 +1,5 @@
 import 'package:clean_earth_project2/sign_up_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -14,6 +15,21 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  void _signInWithEmail(String email, String password) {
+    FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password)
+        .then((value) {
+      print("Successfully logged in!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MyHomePage()),
+      );
+    }).catchError((error) {
+      print("Failed to login: $error!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      // Handle login error (e.g., show a message to the user)
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Email",
+                        "Email or Username",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -58,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
-                          hintText: "Enter your email",
+                          hintText: "Enter your email or username",
                           hintStyle: TextStyle(
                             color: Theme.of(context)
                                 .colorScheme
@@ -118,21 +134,22 @@ class _LoginPageState extends State<LoginPage> {
                         width: double.infinity, // Makes the button as wide as its parent container
                         child: ElevatedButton(
                           onPressed: () {
-                            FirebaseAuth.instance
-                                .signInWithEmailAndPassword(
-                              email: usernameController.text,
-                              password: passwordController.text,
-                            )
-                                .then((value) {
-                              print("Successfully logged in!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                              //Navigator.pop(context); // Return to the previous screen
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => MyHomePage()),
-                              );
+                            FirebaseFirestore.instance
+                                .collection('users')
+                                .where('username', isEqualTo: usernameController.text)
+                                .get()
+                                .then((QuerySnapshot querySnapshot) {
+                              // Check if a user with the given username exists
+                              if (querySnapshot.docs.isNotEmpty) {
+                                // Get the email from the user document
+                                final email = querySnapshot.docs.first['email'];
+                                _signInWithEmail(email, passwordController.text);
+                              } else {
+                                // If not found, try to sign in directly using the email
+                                _signInWithEmail(usernameController.text, passwordController.text);
+                              }
                             }).catchError((error) {
-                              print("Failed to login!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                              print(error.toString());
+                              print("Error checking username in Firestore: $error");
                             });
                           },
                           style: OutlinedButton.styleFrom(

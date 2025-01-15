@@ -17,6 +17,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String username = "<loading username>"; // Default placeholder for username
   String fullName = "<loading full name>"; // Placeholder for user's full name
   String bio = "Bio not available"; // Placeholder for bio
+  String memberSince = "Loading..."; // Placeholder for member since date
 
   @override
   void initState() {
@@ -41,6 +42,16 @@ class _ProfilePageState extends State<ProfilePage> {
             final lastName = data?['lastName'] ?? "User";
             fullName = "$firstName $lastName"; // Combine first and last name
             bio = data?['bio'] ?? "No bio available";
+
+            // Format the createdAt timestamp
+            final createdAt = data?['createdAt'];
+            if (createdAt != null) {
+              final createdDate = (createdAt as Timestamp).toDate();
+              memberSince =
+              "${_getMonthName(createdDate.month)} ${createdDate.day}, ${createdDate.year}";
+            } else {
+              memberSince = "Unknown date";
+            }
           });
         }
       }
@@ -49,8 +60,27 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         username = "Error loading username";
         fullName = "Error loading name";
+        memberSince = "Error loading date";
       });
     }
+  }
+
+  String _getMonthName(int month) {
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ];
+    return monthNames[month - 1];
   }
 
   @override
@@ -76,6 +106,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 return TextButton(
                   onPressed: () {
                     FirebaseAuth.instance.signOut().then((_) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Logged out successfully')),
                       );
@@ -137,26 +171,64 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Bio: $bio",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
+                            const SizedBox(height: 4),
+                            RichText(
+                              text: TextSpan(
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: "Member since: ",
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  TextSpan(
+                                    text: memberSince,
+                                  ),
+                                ],
                               ),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
                             ),
+                            const SizedBox(height: 4),
+                            RichText(
+                              text: TextSpan(
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: "Bio: ",
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  TextSpan(
+                                    text: bio,
+                                  ),
+                                ],
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 4,
+                            ),
+
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton(
-                                onPressed: () {
-                                  Navigator.push(
+                                onPressed: () async {
+                                  // Navigate to EditProfilePage and wait for result
+                                  final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                        const EditProfilePage()),
+                                      builder: (context) =>
+                                      const EditProfilePage(),
+                                    ),
                                   );
+
+                                  // Refresh the profile if result is true
+                                  if (result == true) {
+                                    _fetchUserData();
+                                  }
                                 },
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
@@ -258,3 +330,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+
+
+// TEST CODE ******************************************************************************************8
+
+
