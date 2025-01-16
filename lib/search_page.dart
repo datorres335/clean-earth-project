@@ -163,7 +163,7 @@ class _SearchPageState extends State<SearchPage> {
                   child: Column(
                     children: List.generate(
                       10,
-                      (index) => BottomSheetDummyUI(),
+                      (index) => DummyData(),
                     ),
                   ),
                 ),

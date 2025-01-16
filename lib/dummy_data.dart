@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:clean_earth_project2/show_comments_bottom_sheet.dart';
 
 // ************** DUMMY DATA FOR BOTTOM SHEET *********************
-class BottomSheetDummyUI extends StatelessWidget {
-  const BottomSheetDummyUI({super.key});
+class DummyData extends StatelessWidget {
+  const DummyData({super.key});
 
   @override
   Widget build(BuildContext context) {

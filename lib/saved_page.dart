@@ -26,7 +26,7 @@ class _SavedPageState extends State<SavedPage> {
           padding: const EdgeInsets.all(8.0),
           itemCount: 10, // Number of items in the list
           itemBuilder: (context, index) {
-            return BottomSheetDummyUI();
+            return DummyData();
           },
         ),
       ),
