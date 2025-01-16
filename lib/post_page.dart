@@ -285,19 +285,34 @@ class _PostPageState extends State<PostPage> {
                       label: const Text('Camera'),
                     ),
                     ElevatedButton.icon(
-                      onPressed: _uploadPost,
-                      icon: const Icon(Icons.post_add_outlined),
-                      label: const Text('Post'),
+                      onPressed: _images.isNotEmpty
+                          ? _uploadPost
+                          : null, // Disable button if no images
+                      icon: Icon(
+                        Icons.post_add_outlined,
+                        color: _images.isNotEmpty ? Theme.of(context).colorScheme.primary : Colors.grey, // Dynamic icon color
+                      ),
+                      label: Text(
+                        'Post',
+                        style: TextStyle(
+                          color: _images.isNotEmpty ? Theme.of(context).colorScheme.primary : Colors.grey, // Dynamic font color
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[300], // Darker background color
-                        elevation: 5, // Drop shadow elevation
-                        shadowColor: Colors.grey[600], // Shadow color
+                        backgroundColor: _images.isNotEmpty
+                            ? Theme.of(context).colorScheme.primaryContainer
+                            : Colors.grey[100], // Lighter color for disabled state
+                        elevation: _images.isNotEmpty ? 5 : 0, // No elevation when disabled
+                        shadowColor: Colors.grey[600],
                         side: BorderSide(
-                          color: Colors.grey[700]!, // Darker outline color
-                          width: 1, // Thickness of the outline
+                          color: _images.isNotEmpty
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.grey[200]!, // Lighter outline for disabled state
+                          width: 1,
                         ),
                       ),
                     ),
+
                   ],
                 ),
               ),
