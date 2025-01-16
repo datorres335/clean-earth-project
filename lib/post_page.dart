@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
 import 'package:intl/intl.dart'; // For formatting date
 import 'package:google_geocoding_api/google_geocoding_api.dart'; // For reverse geocoding
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -18,6 +21,7 @@ class _PostPageState extends State<PostPage> {
   String? _currentDate;
   String? _currentCityState;
   String? _currentCoordinates;
+  final TextEditingController _commentController = TextEditingController();
 
   final Location _location = Location();
   late final GoogleGeocodingApi _geocodingApi;
@@ -27,6 +31,12 @@ class _PostPageState extends State<PostPage> {
     super.initState();
     _geocodingApi = GoogleGeocodingApi(dotenv.env['GOOGLE_MAPS_API_KEY']!);
     _fetchLocationAndDetails();
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchLocationAndDetails() async {
@@ -60,7 +70,6 @@ class _PostPageState extends State<PostPage> {
       if (response.results.isNotEmpty) {
         final result = response.results.first;
 
-        // Extract city and state
         String? city = result.addressComponents.firstWhere(
               (component) => component.types.contains('locality'),
           orElse: () => GoogleGeocodingAddressComponent(
@@ -88,6 +97,57 @@ class _PostPageState extends State<PostPage> {
     }
   }
 
+  Future<void> _uploadPost() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not logged in')),
+        );
+        return;
+      }
+
+      final postId = FirebaseFirestore.instance.collection('posts').doc().id;
+      List<String> imageUrls = [];
+
+      for (int i = 0; i < _images.length; i++) {
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('post_images/${user.uid}/$postId/image_$i.jpg');
+        await storageRef.putFile(_images[i]);
+        final imageUrl = await storageRef.getDownloadURL();
+        imageUrls.add(imageUrl);
+      }
+
+      await FirebaseFirestore.instance.collection('posts').doc(postId).set({
+        'userId': user.uid,
+        'date': _currentDate ?? 'Unknown',
+        'cityState': _currentCityState ?? 'Unknown',
+        'coordinates': _currentCoordinates ?? 'Unknown',
+        'comment': _commentController.text ?? '',
+        'images': imageUrls,
+        'timestamp': FieldValue.serverTimestamp(), // For sorting posts
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Post uploaded successfully!')),
+      );
+
+      // Reset the page state
+      setState(() {
+        _images.clear();
+        _fetchLocationAndDetails();
+        _commentController.clear(); // Clear the comment TextField
+      });
+    } catch (e) {
+      print("Error uploading post: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload post: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,14 +155,13 @@ class _PostPageState extends State<PostPage> {
         title: Text(
           "New Post",
           style: TextStyle(
-            color: Theme.of(context).colorScheme.primary, // Set text color to teal
+            color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
       body: Column(
         children: [
-          // Scrolling grid of images
           Expanded(
             child: _images.isEmpty
                 ? const Center(
@@ -113,9 +172,8 @@ class _PostPageState extends State<PostPage> {
             )
                 : GridView.builder(
               padding: const EdgeInsets.all(8.0),
-              gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, // Number of columns
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
                 crossAxisSpacing: 8.0,
                 mainAxisSpacing: 8.0,
               ),
@@ -128,7 +186,6 @@ class _PostPageState extends State<PostPage> {
               },
             ),
           ),
-          // Location and date details
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
@@ -182,24 +239,21 @@ class _PostPageState extends State<PostPage> {
                 ),
                 const SizedBox(height: 4),
                 TextField(
-                  maxLength: 2200, // Limit the input to 2200 characters
-                  maxLines: 3, // Allow multi-line input
+                  controller: _commentController,
+                  maxLength: 2200,
+                  maxLines: 3,
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                     hintText: 'Add a comment...',
                     hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), // Lighter color using theme
+                      color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                     ),
                   ),
-                  onChanged: (value) {
-                    // Handle input value if needed
-                  },
                 ),
               ],
             ),
           ),
-
-          // Buttons for Gallery and Camera
           Padding(
             padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
             child: Row(
@@ -216,9 +270,7 @@ class _PostPageState extends State<PostPage> {
                   label: const Text('Camera'),
                 ),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Implement post functionality
-                  },
+                  onPressed: _uploadPost,
                   icon: const Icon(Icons.post_add_outlined),
                   label: const Text('Post'),
                   style: ElevatedButton.styleFrom(
@@ -227,7 +279,7 @@ class _PostPageState extends State<PostPage> {
                     shadowColor: Colors.grey[600], // Shadow color
                     side: BorderSide(
                       color: Colors.grey[700]!, // Darker outline color
-                      width: 2, // Thickness of the outline
+                      width: 1, // Thickness of the outline
                     ),
                   ),
                 ),
@@ -248,19 +300,12 @@ class _PostPageState extends State<PostPage> {
     }
   }
 
-  // Pick image from camera
   Future<void> _pickImageFromCamera() async {
-    final pickedImage =
-    await ImagePicker().pickImage(source: ImageSource.camera);
+    final pickedImage = await ImagePicker().pickImage(source: ImageSource.camera);
     if (pickedImage != null && _images.length < 15) {
       setState(() {
-        _images.insert(0, File(pickedImage.path)); // Add image to the top of the list
+        _images.insert(0, File(pickedImage.path));
       });
     }
   }
-
-  //function below from video "Flutter Tutorial for Beginners 24 - Firebase Firestore and Firebase Storage" 48:00
-  Future<void> _uploadFileToFBStorage(File file) async {
-   // ehh chatGPT on how to do this
-  }
-} //_PostPageState
+}
