@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
 import 'package:intl/intl.dart'; // For formatting date
 import 'package:google_geocoding_api/google_geocoding_api.dart'; // For reverse geocoding
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -18,6 +22,10 @@ class _PostPageState extends State<PostPage> {
   String? _currentDate;
   String? _currentCityState;
   String? _currentCoordinates;
+  final TextEditingController _commentController = TextEditingController();
+  bool _isLoading = false; // To control loading state
+  Timer? _timer; // Timer for periodic updates
+  StreamSubscription<LocationData>? _locationSubscription; // Subscription for location updates
 
   final Location _location = Location();
   late final GoogleGeocodingApi _geocodingApi;
@@ -27,6 +35,68 @@ class _PostPageState extends State<PostPage> {
     super.initState();
     _geocodingApi = GoogleGeocodingApi(dotenv.env['GOOGLE_MAPS_API_KEY']!);
     _fetchLocationAndDetails();
+    _startTimer(); // Start the timer to update the date and time
+    _startLocationUpdates(); // Start listening to location changes
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    _timer?.cancel(); // Cancel the timer to avoid memory leaks
+    _locationSubscription?.cancel(); // Cancel location updates subscription
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      setState(() {
+        _currentDate = DateFormat.yMMMMd().add_jm().format(DateTime.now());
+      });
+    });
+  }
+
+  void _startLocationUpdates() {
+    _locationSubscription = _location.onLocationChanged.listen((locationData) async {
+      final double latitude = locationData.latitude!;
+      final double longitude = locationData.longitude!;
+
+      // Update coordinates
+      setState(() {
+        _currentCoordinates = "${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}";
+      });
+
+      // Perform reverse geocoding for city/state
+      final response = await _geocodingApi.reverse(
+        '${latitude.toStringAsFixed(5)},${longitude.toStringAsFixed(5)}',
+      );
+
+      if (response.results.isNotEmpty) {
+        final result = response.results.first;
+
+        String? city = result.addressComponents.firstWhere(
+              (component) => component.types.contains('locality'),
+          orElse: () => GoogleGeocodingAddressComponent(
+            longName: '',
+            shortName: '',
+            types: [],
+          ),
+        ).longName;
+
+        String? state = result.addressComponents.firstWhere(
+              (component) => component.types.contains('administrative_area_level_1'),
+          orElse: () => GoogleGeocodingAddressComponent(
+            longName: '',
+            shortName: '',
+            types: [],
+          ),
+        ).shortName;
+
+        // Update city/state
+        setState(() {
+          _currentCityState = "$city, $state";
+        });
+      }
+    });
   }
 
   Future<void> _fetchLocationAndDetails() async {
@@ -50,7 +120,7 @@ class _PostPageState extends State<PostPage> {
       setState(() {
         _currentCoordinates =
         "${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}";
-        _currentDate = DateFormat.yMMMMd().format(DateTime.now());
+        _currentDate = DateFormat.yMMMMd().add_jm().format(DateTime.now());
       });
 
       final response = await _geocodingApi.reverse(
@@ -60,7 +130,6 @@ class _PostPageState extends State<PostPage> {
       if (response.results.isNotEmpty) {
         final result = response.results.first;
 
-        // Extract city and state
         String? city = result.addressComponents.firstWhere(
               (component) => component.types.contains('locality'),
           orElse: () => GoogleGeocodingAddressComponent(
@@ -88,6 +157,70 @@ class _PostPageState extends State<PostPage> {
     }
   }
 
+  Future<void> _uploadPost() async {
+    setState(() {
+      _isLoading = true; // Show loading indicator
+    });
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not logged in')),
+        );
+        setState(() {
+          _isLoading = false; // Hide loading indicator
+        });
+        return;
+      }
+
+      final postId = FirebaseFirestore.instance.collection('posts').doc().id;
+      List<String> imageUrls = [];
+
+      for (int i = 0; i < _images.length; i++) {
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('post_images/${user.uid}/$postId/image_$i.jpg');
+        await storageRef.putFile(_images[i]);
+        final imageUrl = await storageRef.getDownloadURL();
+        imageUrls.add(imageUrl);
+      }
+
+      await FirebaseFirestore.instance.collection('posts').doc(postId).set({
+        'userId': user.uid,
+        'date': _currentDate ?? 'Unknown',
+        'cityState': _currentCityState ?? 'Unknown',
+        'coordinates': _currentCoordinates ?? 'Unknown',
+        'comment': _commentController.text ?? '',
+        'images': imageUrls,
+        'timestamp': FieldValue.serverTimestamp(), // For sorting posts
+        'markedClean' : false,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Post uploaded successfully!')),
+      );
+
+      // Reset the page state
+      setState(() {
+        _images.clear();
+        _fetchLocationAndDetails();
+        _commentController.clear(); // Clear the comment TextField
+        _isLoading = false; // Hide loading indicator
+      });
+    } catch (e) {
+      print("Error uploading post: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload post: $e')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false; // Hide loading indicator
+      });
+    }
+  } // _uploadPost
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,145 +228,192 @@ class _PostPageState extends State<PostPage> {
         title: Text(
           "New Post",
           style: TextStyle(
-            color: Theme.of(context).colorScheme.primary, // Set text color to teal
+            color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // Scrolling grid of images
-          Expanded(
-            child: _images.isEmpty
-                ? const Center(
-              child: Text(
-                'No images added yet',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            )
-                : GridView.builder(
-              padding: const EdgeInsets.all(8.0),
-              gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, // Number of columns
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
-              ),
-              itemCount: _images.length,
-              itemBuilder: (context, index) {
-                return Image.file(
-                  _images[index],
-                  fit: BoxFit.cover,
-                );
-              },
-            ),
-          ),
-          // Location and date details
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
-                    children: [
-                      const TextSpan(
-                        text: "Date: ",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      TextSpan(
-                        text: _currentDate ?? 'Loading...',
-                      ),
-                    ],
+          Column(
+            children: [
+              Expanded(
+                child: _images.isEmpty
+                    ? const Center(
+                  child: Text(
+                    'No images added yet',
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
                   ),
-                ),
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
-                    children: [
-                      const TextSpan(
-                        text: "City, State: ",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      TextSpan(
-                        text: _currentCityState ?? 'Loading...',
-                      ),
-                    ],
+                )
+                    : GridView.builder(
+                  padding: const EdgeInsets.all(8.0),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 8.0,
+                    mainAxisSpacing: 8.0,
                   ),
-                ),
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
-                    children: [
-                      const TextSpan(
-                        text: "Coordinates: ",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      TextSpan(
-                        text: _currentCoordinates ?? 'Loading...',
-                      ),
-                    ],
-                  ),
-                ),
-                const Text(
-                  "Comment:",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 4),
-                TextField(
-                  maxLength: 2200, // Limit the input to 2200 characters
-                  maxLines: 3, // Allow multi-line input
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Add a comment...',
-                    hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), // Lighter color using theme
-                    ),
-                  ),
-                  onChanged: (value) {
-                    // Handle input value if needed
+                  itemCount: _images.length,
+                  itemBuilder: (context, index) {
+                    return Stack(
+                      children: [
+                        // Display the image
+                        Positioned.fill(
+                          child: Image.file(
+                            _images[index],
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        // Add the minus button
+                        Positioned(
+                          top: 4,
+                          right: 4,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _images.removeAt(index);
+                              });
+                            },
+                            child: CircleAvatar(
+                              radius: 12,
+                              backgroundColor: Colors.white,
+                              child: const Icon(
+                                Icons.remove,
+                                color: Colors.black,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
                   },
                 ),
-              ],
-            ),
-          ),
+              ),
 
-          // Buttons for Gallery and Camera
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _pickImagesFromGallery,
-                  icon: const Icon(Icons.image),
-                  label: const Text('Gallery'),
-                ),
-                ElevatedButton.icon(
-                  onPressed: _pickImageFromCamera,
-                  icon: const Icon(Icons.camera_alt),
-                  label: const Text('Camera'),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Implement post functionality
-                  },
-                  icon: const Icon(Icons.post_add_outlined),
-                  label: const Text('Post'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[300], // Darker background color
-                    elevation: 5, // Drop shadow elevation
-                    shadowColor: Colors.grey[600], // Shadow color
-                    side: BorderSide(
-                      color: Colors.grey[700]!, // Darker outline color
-                      width: 2, // Thickness of the outline
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(fontSize: 16, color: Colors.black),
+                        children: [
+                          const TextSpan(
+                            text: "Date: ",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                            text: _currentDate ?? 'Loading...',
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(fontSize: 16, color: Colors.black),
+                        children: [
+                          const TextSpan(
+                            text: "City, State: ",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                            text: _currentCityState ?? 'Loading...',
+                          ),
+                        ],
+                      ),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(fontSize: 16, color: Colors.black),
+                        children: [
+                          const TextSpan(
+                            text: "Coordinates: ",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                            text: _currentCoordinates ?? 'Loading...',
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Text(
+                      "Comment:",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    TextField(
+                      controller: _commentController,
+                      maxLength: 2200,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        hintText: 'Add a comment...',
+                        hintStyle: TextStyle(
+                          color:
+                          Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: _pickImagesFromGallery,
+                      icon: const Icon(Icons.image),
+                      label: const Text('Gallery'),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: _pickImageFromCamera,
+                      icon: const Icon(Icons.camera_alt),
+                      label: const Text('Camera'),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: _images.isNotEmpty
+                          ? _uploadPost
+                          : null, // Disable button if no images
+                      icon: Icon(
+                        Icons.post_add_outlined,
+                        color: _images.isNotEmpty ? Theme.of(context).colorScheme.primary : Colors.grey, // Dynamic icon color
+                      ),
+                      label: Text(
+                        'Post',
+                        style: TextStyle(
+                          color: _images.isNotEmpty ? Theme.of(context).colorScheme.primary : Colors.grey, // Dynamic font color
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _images.isNotEmpty
+                            ? Theme.of(context).colorScheme.primaryContainer
+                            : Colors.grey[100], // Lighter color for disabled state
+                        elevation: _images.isNotEmpty ? 5 : 0, // No elevation when disabled
+                        shadowColor: Colors.grey[600],
+                        side: BorderSide(
+                          color: _images.isNotEmpty
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.grey[200]!, // Lighter outline for disabled state
+                          width: 1,
+                        ),
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
+            ],
           ),
+          if (_isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
         ],
       ),
     );
@@ -248,19 +428,12 @@ class _PostPageState extends State<PostPage> {
     }
   }
 
-  // Pick image from camera
   Future<void> _pickImageFromCamera() async {
-    final pickedImage =
-    await ImagePicker().pickImage(source: ImageSource.camera);
+    final pickedImage = await ImagePicker().pickImage(source: ImageSource.camera);
     if (pickedImage != null && _images.length < 15) {
       setState(() {
-        _images.insert(0, File(pickedImage.path)); // Add image to the top of the list
+        _images.insert(0, File(pickedImage.path));
       });
     }
   }
-
-  //function below from video "Flutter Tutorial for Beginners 24 - Firebase Firestore and Firebase Storage" 48:00
-  Future<void> _uploadFileToFBStorage(File file) async {
-   // ehh chatGPT on how to do this
-  }
-} //_PostPageState
+}

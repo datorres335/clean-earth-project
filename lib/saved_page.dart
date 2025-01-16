@@ -13,12 +13,25 @@ class _SavedPageState extends State<SavedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Saved Posts",
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.primary, // Set text color to teal
-            fontWeight: FontWeight.bold,
-          ),
+        title: Column(
+          children: [
+            Text(
+              "Saved Posts",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary, // Set text color to teal
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              "TODO:",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
       body: SafeArea(
@@ -26,7 +39,7 @@ class _SavedPageState extends State<SavedPage> {
           padding: const EdgeInsets.all(8.0),
           itemCount: 10, // Number of items in the list
           itemBuilder: (context, index) {
-            return BottomSheetDummyUI();
+            return DummyData();
           },
         ),
       ),

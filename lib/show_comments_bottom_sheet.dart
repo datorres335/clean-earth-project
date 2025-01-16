@@ -11,15 +11,17 @@ void showComments(BuildContext context) {
           child: SizedBox(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height * 0.85, // Ensure it stops before the status bar
-            child: Center(
-              child: Text(
-                "User Comments Go Here.",
-                style: TextStyle(
-                  fontSize: 24, // Set font size
-                  fontWeight: FontWeight.bold, // Optional: Make it bold
+            child: Column(
+              children: [
+                Text(
+                  "\nTODO:\n\nUser Comments Go Here.",
+                  style: TextStyle(
+                    fontSize: 24, // Set font size
+                    fontWeight: FontWeight.bold, // Optional: Make it bold
+                  ),
+                  textAlign: TextAlign.center, // Center-align the text
                 ),
-                textAlign: TextAlign.center, // Center-align the text
-              ),
+              ]
             ),
           ),
         ),
