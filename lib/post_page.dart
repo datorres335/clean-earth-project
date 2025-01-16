@@ -194,13 +194,42 @@ class _PostPageState extends State<PostPage> {
                   ),
                   itemCount: _images.length,
                   itemBuilder: (context, index) {
-                    return Image.file(
-                      _images[index],
-                      fit: BoxFit.cover,
+                    return Stack(
+                      children: [
+                        // Display the image
+                        Positioned.fill(
+                          child: Image.file(
+                            _images[index],
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        // Add the minus button
+                        Positioned(
+                          top: 4,
+                          right: 4,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _images.removeAt(index);
+                              });
+                            },
+                            child: CircleAvatar(
+                              radius: 12,
+                              backgroundColor: Colors.white,
+                              child: const Icon(
+                                Icons.remove,
+                                color: Colors.black,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     );
                   },
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
