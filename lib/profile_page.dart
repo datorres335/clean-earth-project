@@ -3,8 +3,7 @@ import 'package:clean_earth_project2/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'dummy_data.dart'; // Import Firestore
+import 'dummy_data.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
