@@ -164,7 +164,7 @@ class _SearchPageState extends State<SearchPage> {
                     children: [
                       Center(
                         child: Text(
-                          "TODO:",
+                          "TODO: display posts visible on map",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
