@@ -8,6 +8,7 @@ import 'package:intl/intl.dart'; // For formatting date
 import 'package:google_geocoding_api/google_geocoding_api.dart'; // For reverse geocoding
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -23,6 +24,8 @@ class _PostPageState extends State<PostPage> {
   String? _currentCoordinates;
   final TextEditingController _commentController = TextEditingController();
   bool _isLoading = false; // To control loading state
+  Timer? _timer; // Timer for periodic updates
+  StreamSubscription<LocationData>? _locationSubscription; // Subscription for location updates
 
   final Location _location = Location();
   late final GoogleGeocodingApi _geocodingApi;
@@ -32,12 +35,68 @@ class _PostPageState extends State<PostPage> {
     super.initState();
     _geocodingApi = GoogleGeocodingApi(dotenv.env['GOOGLE_MAPS_API_KEY']!);
     _fetchLocationAndDetails();
+    _startTimer(); // Start the timer to update the date and time
+    _startLocationUpdates(); // Start listening to location changes
   }
 
   @override
   void dispose() {
     _commentController.dispose();
+    _timer?.cancel(); // Cancel the timer to avoid memory leaks
+    _locationSubscription?.cancel(); // Cancel location updates subscription
     super.dispose();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(minutes: 5), (timer) {
+      setState(() {
+        _currentDate = DateFormat.yMMMMd().add_jm().format(DateTime.now());
+      });
+    });
+  }
+
+  void _startLocationUpdates() {
+    _locationSubscription = _location.onLocationChanged.listen((locationData) async {
+      final double latitude = locationData.latitude!;
+      final double longitude = locationData.longitude!;
+
+      // Update coordinates
+      setState(() {
+        _currentCoordinates = "${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}";
+      });
+
+      // Perform reverse geocoding for city/state
+      final response = await _geocodingApi.reverse(
+        '${latitude.toStringAsFixed(5)},${longitude.toStringAsFixed(5)}',
+      );
+
+      if (response.results.isNotEmpty) {
+        final result = response.results.first;
+
+        String? city = result.addressComponents.firstWhere(
+              (component) => component.types.contains('locality'),
+          orElse: () => GoogleGeocodingAddressComponent(
+            longName: '',
+            shortName: '',
+            types: [],
+          ),
+        ).longName;
+
+        String? state = result.addressComponents.firstWhere(
+              (component) => component.types.contains('administrative_area_level_1'),
+          orElse: () => GoogleGeocodingAddressComponent(
+            longName: '',
+            shortName: '',
+            types: [],
+          ),
+        ).shortName;
+
+        // Update city/state
+        setState(() {
+          _currentCityState = "$city, $state";
+        });
+      }
+    });
   }
 
   Future<void> _fetchLocationAndDetails() async {
