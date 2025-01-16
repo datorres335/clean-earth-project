@@ -48,7 +48,7 @@ class _PostPageState extends State<PostPage> {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(const Duration(minutes: 5), (timer) {
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       setState(() {
         _currentDate = DateFormat.yMMMMd().add_jm().format(DateTime.now());
       });
@@ -195,6 +195,7 @@ class _PostPageState extends State<PostPage> {
         'comment': _commentController.text ?? '',
         'images': imageUrls,
         'timestamp': FieldValue.serverTimestamp(), // For sorting posts
+        'markedClean' : false,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
