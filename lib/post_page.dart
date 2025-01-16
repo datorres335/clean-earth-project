@@ -61,7 +61,7 @@ class _PostPageState extends State<PostPage> {
       setState(() {
         _currentCoordinates =
         "${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}";
-        _currentDate = DateFormat.yMMMMd().format(DateTime.now());
+        _currentDate = DateFormat.yMMMMd().add_jm().format(DateTime.now());
       });
 
       final response = await _geocodingApi.reverse(
