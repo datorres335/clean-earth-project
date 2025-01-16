@@ -3,7 +3,7 @@
 * **********************/
 // import 'package:clean_earth_project2/Google_Maps/map_page.dart';
 // import 'package:flutter/material.dart';
-// import 'draggable_sheet.dart';
+// import 'search_results_sheet.dart';
 // import 'package:clean_earth_project2/dummy_data.dart';
 //
 // class SearchPage extends StatefulWidget {
@@ -49,7 +49,7 @@
 * Uses the Stack widget
 * */
 // import 'package:flutter/material.dart';
-// import 'draggable_sheet.dart';
+// import 'search_results_sheet.dart';
 // import 'package:clean_earth_project2/dummy_data.dart';
 //
 // class SearchPage extends StatefulWidget {
@@ -122,7 +122,7 @@
 //     );
 //   }
 // }
-// import 'draggable_sheet.dart';
+// import 'search_results_sheet.dart';
 
 
 /* *******************************
@@ -131,7 +131,7 @@
 import 'package:clean_earth_project2/Google_Maps/map_page.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_earth_project2/dummy_data.dart';
-import 'draggable_sheet.dart';
+import 'search_results_sheet.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -159,12 +159,27 @@ class _SearchPageState extends State<SearchPage> {
             child: Align(
               alignment: Alignment.bottomCenter,
               child: SafeArea(
-                child: DraggableSheet(
+                child: SearchResultsSheet(
                   child: Column(
-                    children: List.generate(
-                      10,
-                      (index) => DummyData(),
-                    ),
+                    children: [
+                      Center(
+                        child: Text(
+                          "TODO:",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Column(
+                        children: List.generate(
+                          10,
+                          (index) => DummyData(),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

@@ -18,6 +18,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String bio = "Bio not available"; // Placeholder for bio
   String memberSince = "Loading..."; // Placeholder for member since date
   String? _profileImageUrl;
+  int _postCount = 0; // Track the number of posts
 
   @override
   void initState() {
@@ -268,9 +269,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
+                          children: [
                             Text(
-                              "12",
+                              "$_postCount",
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                               textAlign: TextAlign.center,
@@ -302,9 +303,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           mainAxisSize: MainAxisSize.min,
                           children: const [
                             Text(
-                              "8",
+                              // TODO: need to dynamically update this value to how many places a user has marked clean in total
+                              "TODO:",
                               style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                             Text(
@@ -320,7 +325,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               // USER'S POSTS
-              UserProfilePosts(),
+              UserProfilePosts(
+                onPostCountChanged: (count) {
+                  setState(() {
+                    _postCount = count; // Update the post count
+                  });
+                },
+              ),
             ],
           ),
         ),

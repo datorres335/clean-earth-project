@@ -1,9 +1,14 @@
+import 'package:clean_earth_project2/show_comments_bottom_sheet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'mark_clean_bottom_sheet.dart';
+
 class UserProfilePosts extends StatefulWidget {
-  const UserProfilePosts({super.key});
+  final ValueChanged<int> onPostCountChanged; // Callback to pass post count
+
+  const UserProfilePosts({super.key, required this.onPostCountChanged});
 
   @override
   State<UserProfilePosts> createState() => _UserProfilePostsState();
@@ -11,6 +16,7 @@ class UserProfilePosts extends StatefulWidget {
 
 class _UserProfilePostsState extends State<UserProfilePosts> {
   late Future<List<Map<String, dynamic>>> _userPostsFuture;
+  double fontSize = 14;
 
   @override
   void initState() {
@@ -32,8 +38,13 @@ class _UserProfilePostsState extends State<UserProfilePosts> {
         .orderBy('timestamp', descending: true)
         .get();
 
+    final posts = querySnapshot.docs.map((doc) => doc.data()).toList();
+
+    // Notify the parent widget of the post count
+    widget.onPostCountChanged(posts.length);
+
     // Map Firestore documents to a list of post data
-    return querySnapshot.docs.map((doc) => doc.data()).toList();
+    return posts;
   }
 
   @override
@@ -102,17 +113,100 @@ class _UserProfilePostsState extends State<UserProfilePosts> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Text(
-                      "Date: ${post['date'] ?? 'Unknown'}",
-                      style: const TextStyle(fontSize: 16),
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "Date: ",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize),
+                          ),
+                          TextSpan(
+                            text: "${post['date'] ?? 'Unknown'}",
+                            style: TextStyle(fontSize: fontSize),
+                          ),
+                        ],
+                      ),
                     ),
-                    Text(
-                      "City, State: ${post['cityState'] ?? 'Unknown'}",
-                      style: const TextStyle(fontSize: 16),
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "City, State: ",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize),
+                          ),
+                          TextSpan(
+                            text: "${post['cityState'] ?? 'Unknown'}",
+                            style: TextStyle(fontSize: fontSize),
+                          ),
+                        ],
+                      ),
                     ),
-                    Text(
-                      "Coordinates: ${post['coordinates'] ?? 'Unknown'}",
-                      style: const TextStyle(fontSize: 16),
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "Coordinates: ",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize),
+                          ),
+                          TextSpan(
+                            text: "${post['coordinates'] ?? 'Unknown'}",
+                            style: TextStyle(fontSize: fontSize),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            // TODO: must open showModalBottomSheet once clicked to show post's comments
+                            showComments(context);
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.black12, // Background color
+                            padding: const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 2.0, right: 2.0), // Add padding inside the button
+                            minimumSize: Size.zero, // Remove minimum size constraints
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrink tap target
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0), // Rounded corners
+                            ),
+                          ),
+                          child: Text(
+                            "Comments",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold, // Text color
+                              color: Colors.black,
+                              fontSize: fontSize,
+                            ),
+                          ),
+                        ),
+
+                        Spacer(),
+
+                        TextButton(
+                          onPressed: () {
+                            // TODO:
+                            markClean(context);
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: Theme.of(context).colorScheme.secondaryContainer, // Background color
+                            padding: const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 2.0, right: 2.0),  // Add padding inside the button
+                            minimumSize: Size.zero, // Remove minimum size constraints
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrink tap target
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0), // Rounded corners
+                            ),
+                          ),
+                          child: Text(
+                            "Mark Clean",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 10),
                     Divider(color: Colors.black54, thickness: 1),
