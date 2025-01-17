@@ -1,9 +1,9 @@
-import 'package:clean_earth_project2/show_comments_bottom_sheet.dart';
+import 'package:clean_earth_project2/Post_Page_Related/show_comments_bottom_sheet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'mark_clean_bottom_sheet.dart';
+import '../Post_Page_Related/mark_clean_bottom_sheet.dart';
 
 class UserProfilePosts extends StatefulWidget {
   final ValueChanged<int> onPostCountChanged; // Callback to pass post count

@@ -1,10 +1,10 @@
-import 'package:clean_earth_project2/login_page.dart';
-import 'package:clean_earth_project2/post_page.dart';
-import 'package:clean_earth_project2/user_profile_posts.dart';
+import 'package:clean_earth_project2/Profile_Page_Related/login_page.dart';
+import 'package:clean_earth_project2/Post_Page_Related/post_page.dart';
+import 'package:clean_earth_project2/Profile_Page_Related/user_profile_posts.dart';
 import 'package:flutter/material.dart';
-import 'package:clean_earth_project2/search_page.dart';
-import 'package:clean_earth_project2/saved_page.dart';
-import 'package:clean_earth_project2/profile_page.dart';
+import 'package:clean_earth_project2/Search_Page_Related/search_page.dart';
+import 'package:clean_earth_project2/Saved_Page_Related/saved_page.dart';
+import 'package:clean_earth_project2/Profile_Page_Related/profile_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart'; //NEED THIS FOR THE API KEY LOCATED IN .env
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase Auth

@@ -1,9 +1,9 @@
-import 'package:clean_earth_project2/sign_up_page.dart';
+import 'package:clean_earth_project2/Profile_Page_Related/sign_up_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'main.dart';
+import '../main.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

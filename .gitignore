@@ -45,7 +45,7 @@ app.*.map.json
 /android/app/release
 
 # API keys, ALL OF THE FILES UNDERNEATH HAVE API KEYS IN THEM!!!!!!!!!!!!!!!!!!!!!
-lib/Google_Maps/secret_keys.dart
+lib/Search_Page_Related/Google_Maps/secret_keys.dart
 .env
 lib/firebase_options.dart
 android/app/google-services.json
