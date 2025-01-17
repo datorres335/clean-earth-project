@@ -1,6 +1,6 @@
-import 'package:clean_earth_project2/edit_profile_page.dart';
-import 'package:clean_earth_project2/login_page.dart';
-import 'package:clean_earth_project2/user_profile_posts.dart';
+import 'package:clean_earth_project2/Profile_Page_Related/edit_profile_page.dart';
+import 'package:clean_earth_project2/Profile_Page_Related/login_page.dart';
+import 'package:clean_earth_project2/Profile_Page_Related/user_profile_posts.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For storing user details
 import 'package:intl/intl.dart';
 
-import 'main.dart'; // For date formatting
+import '../main.dart'; // For date formatting
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});

@@ -1,4 +1,4 @@
-import 'package:clean_earth_project2/Google_Maps/map_page.dart';
+import 'package:clean_earth_project2/Search_Page_Related/Google_Maps/map_page.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_earth_project2/dummy_data.dart';
 import 'search_results_sheet.dart';

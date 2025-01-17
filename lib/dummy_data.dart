@@ -1,7 +1,7 @@
-import 'package:clean_earth_project2/mark_clean_bottom_sheet.dart';
-import 'package:clean_earth_project2/profile_page.dart';
+import 'package:clean_earth_project2/Post_Page_Related/mark_clean_bottom_sheet.dart';
+import 'package:clean_earth_project2/Profile_Page_Related/profile_page.dart';
 import 'package:flutter/material.dart';
-import 'package:clean_earth_project2/show_comments_bottom_sheet.dart';
+import 'package:clean_earth_project2/Post_Page_Related/show_comments_bottom_sheet.dart';
 
 // ************** DUMMY DATA FOR BOTTOM SHEET *********************
 class DummyData extends StatelessWidget {
