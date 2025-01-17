@@ -73,6 +73,13 @@ class _MapPageState extends State<MapPage> {
             onCameraMove: _onCameraMove,
             onCameraIdle: _updateVisibleCircles,
             circles: _visibleCircles,
+            markers: {
+              Marker( // user location
+                markerId: MarkerId("_currentLocation"),
+                icon: BitmapDescriptor.defaultMarker,
+                position: _currentP!,
+              ),
+            },
             zoomControlsEnabled: false,
           ),
           // Search Bar
