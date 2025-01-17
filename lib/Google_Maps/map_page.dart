@@ -38,6 +38,10 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> _fetchPostCoordinates() async {
+    // Fetch the Google Map controller to get the visible region
+    final GoogleMapController controller = await _mapController.future;
+    final LatLngBounds bounds = await controller.getVisibleRegion();
+
     final querySnapshot = await FirebaseFirestore.instance.collection('posts').get();
 
     final coordinates = querySnapshot.docs.map((doc) {
@@ -51,8 +55,18 @@ class _MapPageState extends State<MapPage> {
       return null;
     }).whereType<LatLng>().toList();
 
+    // Filter coordinates that fall within the visible bounds
+    final visibleCoordinates = coordinates.where((coord) {
+      return coord.latitude >= bounds.southwest.latitude &&
+          coord.latitude <= bounds.northeast.latitude &&
+          coord.longitude >= bounds.southwest.longitude &&
+          coord.longitude <= bounds.northeast.longitude;
+    }).toList();
+
+    // Update the state with only visible coordinates
     setState(() {
-      _postCoordinates.addAll(coordinates);
+      _postCoordinates.clear();
+      _postCoordinates.addAll(visibleCoordinates);
     });
   }
 
@@ -217,6 +231,7 @@ class _MapPageState extends State<MapPage> {
   void _onCameraMove(CameraPosition position) {
     setState(() {
       _currentZoom = position.zoom;
+      _fetchPostCoordinates();
     });
   }
 
