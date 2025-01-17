@@ -1,10 +1,10 @@
 import 'dart:async';
-// import 'package:clean_earth_project2/Google_Maps/scale_bar.dart'; //not yet working
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_geocoding_api/google_geocoding_api.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:google_geocoding_api/google_geocoding_api.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -14,13 +14,14 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  Location _locationController = Location();
-  final Completer<GoogleMapController> _mapController =
-  Completer<GoogleMapController>();
+  final Location _locationController = Location();
+  final Completer<GoogleMapController> _mapController = Completer<GoogleMapController>();
   LatLng? _currentP;
-  double _currentZoom = 13.0; // Track the current zoom level scale bar
+  double _currentZoom = 13.0;
+  final List<LatLng> _postCoordinates = [];
+  final Set<Circle> _visibleCircles = {};
+  final double _maxRadius = 100000; // Maximum radius in meters
   final TextEditingController _searchController = TextEditingController();
-
   // Load the API key from dotenv
   late final GoogleGeocodingApi _geocodingApi;
 
@@ -32,7 +33,41 @@ class _MapPageState extends State<MapPage> {
       throw Exception('Google Maps API key not found in .env file');
     }
     _geocodingApi = GoogleGeocodingApi(apiKey); // Initialize API
+    _fetchPostCoordinates();
     getLocationUpdates();
+  }
+
+  Future<void> _fetchPostCoordinates() async {
+    // Fetch the Google Map controller to get the visible region
+    final GoogleMapController controller = await _mapController.future;
+    final LatLngBounds bounds = await controller.getVisibleRegion();
+
+    final querySnapshot = await FirebaseFirestore.instance.collection('posts').get();
+
+    final coordinates = querySnapshot.docs.map((doc) {
+      final data = doc.data();
+      if (data['coordinates'] != null) {
+        final parts = (data['coordinates'] as String).split(', ');
+        if (parts.length == 2) {
+          return LatLng(double.parse(parts[0]), double.parse(parts[1]));
+        }
+      }
+      return null;
+    }).whereType<LatLng>().toList();
+
+    // Filter coordinates that fall within the visible bounds
+    final visibleCoordinates = coordinates.where((coord) {
+      return coord.latitude >= bounds.southwest.latitude &&
+          coord.latitude <= bounds.northeast.latitude &&
+          coord.longitude >= bounds.southwest.longitude &&
+          coord.longitude <= bounds.northeast.longitude;
+    }).toList();
+
+    // Update the state with only visible coordinates
+    setState(() {
+      _postCoordinates.clear();
+      _postCoordinates.addAll(visibleCoordinates);
+    });
   }
 
   @override
@@ -40,31 +75,27 @@ class _MapPageState extends State<MapPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Google Map
           _currentP == null
-              ? const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),))
+              ? const Center(child: CircularProgressIndicator())
               : GoogleMap(
             onMapCreated: (GoogleMapController controller) =>
                 _mapController.complete(controller),
-            // onCameraMove: (CameraPosition position) { // SCALE BAR NOT YET WORKING PROPERLY
-            //   setState(() {
-            //     _currentZoom = position.zoom; // Update zoom level for scale bar
-            //   });
-            // },
             initialCameraPosition: CameraPosition(
               target: _currentP!,
-              zoom: _currentZoom, // Adjust zoom level
+              zoom: _currentZoom,
             ),
+            onCameraMove: _onCameraMove,
+            onCameraIdle: _updateVisibleCircles,
+            circles: _visibleCircles,
             markers: {
-              Marker(
+              Marker( // user location
                 markerId: MarkerId("_currentLocation"),
                 icon: BitmapDescriptor.defaultMarker,
                 position: _currentP!,
               ),
             },
-            zoomControlsEnabled: false, // Disable default zoom controls
+            zoomControlsEnabled: false,
           ),
-
           // Search Bar
           Positioned(
             top: 45, // Adjust the position of the search bar
@@ -192,15 +223,52 @@ class _MapPageState extends State<MapPage> {
             ),
           ),
 
-          // Scale Bar (NOT WORKING PROPERLY)
-          // Positioned(
-          //   bottom: 20,
-          //   left: 20,
-          //   child: ScaleBar(zoomLevel: _currentZoom)//CustomScaleBar(zoomLevel: _currentZoom), // Add the scale bar
-          // ),
         ],
       ),
     );
+  }
+
+  void _onCameraMove(CameraPosition position) {
+    setState(() {
+      _currentZoom = position.zoom;
+      _fetchPostCoordinates();
+    });
+  }
+
+  void _updateVisibleCircles() {
+    setState(() {
+      _visibleCircles
+        ..clear()
+        ..addAll(_postCoordinates.map((coord) {
+          final dynamicRadius = _calculateRadius();
+          return Circle(
+            circleId: CircleId('${coord.latitude},${coord.longitude}'),
+            center: coord,
+            radius: dynamicRadius,
+            fillColor: Colors.blue,
+            strokeColor: Colors.blue[200] ?? Colors.blue,
+            strokeWidth: 2,
+          );
+        }));
+    });
+  }
+
+  double _calculateRadius() {
+    const double baseRadius = 2; // Minimum radius in meters
+    const double maxScaleFactor = 100; // Maximum scale factor for far zoom
+    const double minScaleFactor = 5; // Minimum scale factor for close zoom
+
+    // Dynamically calculate the scale factor based on the zoom level
+    double scaleFactor = ((20 - _currentZoom) / 20) * (maxScaleFactor - minScaleFactor) + minScaleFactor;
+
+    // Ensure scaleFactor stays within bounds
+    scaleFactor = scaleFactor.clamp(minScaleFactor, maxScaleFactor);
+
+    // Calculate radius with dynamic scale factor
+    final double calculatedRadius = baseRadius + ((20 - _currentZoom) * scaleFactor);
+
+    // Clamp the radius to stay within bounds
+    return calculatedRadius.clamp(baseRadius, _maxRadius);
   }
 
   Future<void> _cameraToPosition(LatLng pos) async {
@@ -237,16 +305,13 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> getLocationUpdates() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-
-    _serviceEnabled = await _locationController.serviceEnabled();
+    bool _serviceEnabled = await _locationController.serviceEnabled();
     if (!_serviceEnabled) {
       _serviceEnabled = await _locationController.requestService();
       if (!_serviceEnabled) return;
     }
 
-    _permissionGranted = await _locationController.hasPermission();
+    PermissionStatus _permissionGranted = await _locationController.hasPermission();
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await _locationController.requestPermission();
       if (_permissionGranted != PermissionStatus.granted) return;

@@ -31,6 +31,11 @@ class _UserProfilePostsState extends State<UserProfilePosts> {
       throw Exception('User not logged in');
     }
 
+    /*
+    * TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    *  Need to update the "users" firestore database so that each user have arrays
+    * for "postsMade", "savedPosts", "followingProfiles", "followersProfiles"
+    * */
     // Query Firestore for posts created by the current user
     final querySnapshot = await FirebaseFirestore.instance
         .collection('posts')

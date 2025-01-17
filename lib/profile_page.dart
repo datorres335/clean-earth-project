@@ -88,6 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(), // kept here strictly for the back button for when you navigate to it
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(

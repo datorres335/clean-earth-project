@@ -29,7 +29,7 @@ class _SavedPageState extends State<SavedPage> {
                 fontWeight: FontWeight.bold,
                 color: Colors.red,
               ),
-              textAlign: TextAlign.center,
+              // textAlign: TextAlign.center,
             ),
           ],
         ),
