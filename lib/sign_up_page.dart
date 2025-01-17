@@ -225,6 +225,10 @@ class _SignUpPageState extends State<SignUpPage> {
         'email': emailController.text,
         'createdAt': FieldValue.serverTimestamp(),
         'bio' : "",
+        'postsMade' : [],
+        'savedPosts' : [],
+        'followingProfiles' : [],
+        'followersProfiles' : [],
       }).then((value){
         print("Successfully added user to Firestore");
       }).catchError((error){
