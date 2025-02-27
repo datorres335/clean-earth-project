@@ -1,5 +1,8 @@
 # Clean Earth App 🌍
 
+## Demo
+Watch the demo presentation here!: [YouTube Video](https://youtu.be/bagb6aQiIWo)
+
 ## Project Overview
 Clean Earth is a community-driven app that empowers users to upload photos of areas needing cleanup and mark them on an interactive map. The app aims to raise awareness about littered or polluted locations and foster collaboration among community members to restore these areas. Together, we can build a cleaner, healthier world!
 
