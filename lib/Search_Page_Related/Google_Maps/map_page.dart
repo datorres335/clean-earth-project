@@ -318,6 +318,7 @@ class _MapPageState extends State<MapPage> {
     }
 
     _locationController.onLocationChanged.listen((LocationData currentLocation) {
+      if (!mounted) return; // Prevent setState after dispose
       if (currentLocation.latitude != null && currentLocation.longitude != null) {
         setState(() {
           _currentP = LatLng(currentLocation.latitude!, currentLocation.longitude!);
